@@ -25,6 +25,10 @@ export function VideoForm() {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    const loadingToast = toast.loading("Submitting Video...", {
+      position: "bottom-right",
+    });
+
     try {
       const res = await fetch("/api/sheetHandler", {
         method: "POST",
@@ -37,29 +41,28 @@ export function VideoForm() {
         throw new Error(err.message || "Failed to submit video");
       }
 
-      const result = await res.json();
-
-      toast("Video submitted!", {
-        description: (
-          <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-            <code>{JSON.stringify(result.data, null, 2)}</code>
-          </pre>
-        ),
+      toast.success("Video Submitted!", {
+        id: loadingToast,
+        description: "Your video was saved successfully!",
         position: "bottom-right",
       });
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong", { position: "bottom-right" });
+      toast.error(error.message || "Something went wrong", {
+        id: loadingToast,
+        position: "bottom-right",
+      });
     }
   }
+
   return (
-    <Card className="w-full sm:max-w-md">
+    <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Upload Video</CardTitle>
         <CardDescription>Uploaded video will be saved to google sheet</CardDescription>
       </CardHeader>
 
       <CardContent>
-        <form id="bug-report-form" onSubmit={form.handleSubmit(onSubmit)}>
+        <form id="submit-form" onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller
               name="title"
@@ -98,7 +101,7 @@ export function VideoForm() {
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>
-          <Button type="submit" form="bug-report-form">
+          <Button type="submit" form="submit-form">
             Submit
           </Button>
         </Field>

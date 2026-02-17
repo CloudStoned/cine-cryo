@@ -3,6 +3,7 @@ import { google } from "googleapis";
 type SheetForm = {
   title: string;
   video_link: string;
+  sheet_name: string;
 };
 
 export default async function sheetHandler(body: SheetForm) {
@@ -22,7 +23,7 @@ export default async function sheetHandler(body: SheetForm) {
 
   const response = await sheets.spreadsheets.values.append({
     spreadsheetId: process.env.GOOGLE_SHEET_ID,
-    range: "A1:B1",
+    range: `${body.sheet_name}!A1:B1`,
     valueInputOption: "USER_ENTERED",
     requestBody: {
       values: [[body.title, body.video_link]],
